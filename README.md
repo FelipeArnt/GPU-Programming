@@ -115,13 +115,4 @@ A condição `if` evita **out-of-bounds** quando `N` não é múltiplo de `block
 
 ---
 
-## 9. Possíveis Variações Didáticas
-
-| Alteração | Aprendizado |
-|-----------|-------------|
-| `N = 1 024` | Escalabilidade |
-| `threads = 32` | Exato tamanho de **warp** |
-| `__shared__ float buf[256]` | Introduz **memória local** |
-| `atomicAdd(&z[0], 1)` | Redução e **concorrência** |
-| `cudaMallocManaged` | **Unified Memory** – zero cópias |
 
