@@ -54,7 +54,7 @@ for (lin = 0 … 7)
 
 ---
 
-## 4. Fluxo de Dados (esquema textual)
+## 4. Fluxo de Dados 
 
 ```
 CPU (HOST)                     GPU (DEVICE)
