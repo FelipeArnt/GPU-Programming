@@ -62,7 +62,7 @@ CPU (HOST)                     GPU (DEVICE)
 │ h_x = 1.0   │──cudaMemcpy──►│ d_x         │
 │ h_y = 2.0   │──cudaMemcpy──►│ d_y         │
 │             │               │ d_z         │
-│ h_z (vazio) │◀--cudaMemcpy--│ d_z ← add() │
+│ h_z (vazio) │◀-cudaMemcpy-►│ d_z ← add() │
 └-------------┘               └-------------┘
 ```
 
