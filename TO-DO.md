@@ -2,9 +2,12 @@
 
 Próximos passos do projeto GPU-Programming em CUDA.
 
-https://docs.nvidia.com/cuda/cuda-c-programming-guide/
-https://docs.nvidia.com/cuda/cuda-runtime-api/
-https://sysprog21.github.io/lkmpg/#introduction
+### CUDA
+- https://docs.nvidia.com/cuda/cuda-c-programming-guide/
+- https://docs.nvidia.com/cuda/cuda-runtime-api/
+
+# KERNEL
+- https://sysprog21.github.io/lkmpg/#introduction
 
 ---
 
