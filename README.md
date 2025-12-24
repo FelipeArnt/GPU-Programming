@@ -1,6 +1,8 @@
-# 📊 CUDA-Table – Notação, Cálculo & Anatomia do Algoritmo
+# 📊 CUDA_Table – Notação, Cálculo & Anatomia do Algoritmo
 
-Pequeno projeto de programaap em GPUs: Foram somados 128 números na GPU e o resultado foi impresso no formato de **tabela 8 × 16** para exibir a paralelização.
+Pequeno projeto de programação em GPUs:
+
+Soma de 128 números na GPU e geração do resultado no formato de **tabela 8 × 16** para exibir a paralelização.
 
 ---
 
@@ -111,8 +113,7 @@ A condição `if` evita **out-of-bounds** quando `N` não é múltiplo de `block
 ## 8. Visual
 
 - 128 = 2⁷ → fatoração 2⁴ × 2³ = 16 × 8 gera **tabela quadrada visualmente agradável**.  
-- Facilita verificar de relance se **todos os elementos** estão corretos (tudo 3).
-
+- Facilita verificar de relance se **todos os elementos** estão corretos.
 ---
 
 
