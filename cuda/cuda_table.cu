@@ -27,8 +27,8 @@ int main()
     float *h_z = new float[N];
 
     for (int i = 0; i < N; ++i) {
-        h_x[i] = 1.0f;
-        h_y[i] = 2.0f;
+        h_x[i] = 34.0f;
+        h_y[i] = 35.0f;
     }
 
     // 2) aloca DEVICE
