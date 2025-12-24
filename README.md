@@ -1,8 +1,6 @@
-# 📊 CUDA_Table – Notação, Cálculo & Anatomia do Algoritmo
+# 📊 CUDA – Notação, Cálculo & Anatomia do Algoritmo
 
-Pequeno projeto de programação em GPUs:
-
-Soma de 128 números na GPU e geração do resultado no formato de **tabela 8 × 16** para exibir a paralelização.
+Pequeno projeto de programação em GPUs: Soma de 128 números na GPU e geração do resultado no formato de **tabela 8 × 16** para exibir a paralelização.
 
 ---
 
@@ -70,7 +68,7 @@ CPU (HOST)                     GPU (DEVICE)
 
 ---
 
-## 5. Kernel – Álgebricamente
+## 5. Kernel – Algebricamente
 
 Kernel `add`:
 
