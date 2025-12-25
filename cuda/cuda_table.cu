@@ -52,7 +52,7 @@ int main()
     cudaMemcpy(h_z, d_z, bytes, cudaMemcpyDeviceToHost);
 
     // 6) imprime tabela 8 × 16
-  std::cout << "Device Host: \n";
+  std::cout << "GPU Programming : \n";
     for (int lin = 0; lin < 8; ++lin) {
         for (int col = 0; col < 16; ++col)
             std::cout << std::setw(4) << static_cast<int>(h_z[lin * 16 + col]);
