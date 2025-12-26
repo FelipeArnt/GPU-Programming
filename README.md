@@ -8,7 +8,7 @@ Pequeno projeto de programação em GPUs: Soma de 128 números na GPU e geraçã
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `cuda-hello-table.cu` | Código-fonte completo (C++17 + CUDA) |
+| `cuda_table.cu` | Código-fonte completo (C++17 + CUDA) |
 | `Makefile` | Compila com um comando só |
 | `README.md` | Este arquivo |
 
