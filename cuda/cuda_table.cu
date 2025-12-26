@@ -5,7 +5,7 @@
 #include <cuda_runtime.h>
 
 
-#define N 512     // 8 × 16
+#define N 128     // 8 × 16
 
 __global__
 void add(int n, const float *x, const float *y, float *z)
@@ -27,8 +27,8 @@ int main()
     float *h_z = new float[N];
 
     for (int i = 0; i < N; ++i) {
-        h_x[i] = 34.0f;
-        h_y[i] = 35.0f;
+        h_x[i] = 35.0f;
+        h_y[i] = 34.0f;
     }
 
     // 2) aloca DEVICE
