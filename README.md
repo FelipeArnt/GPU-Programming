@@ -4,6 +4,76 @@ Pequeno projeto de programação em GPUs: Soma de 128 números na GPU e geraçã
 
 ---
 
+## 📦 O que está aqui
+
+| Arquivo | Descrição |
+|---------|-----------|
+| `cuda-hello-table.cu` | Código-fonte completo (C++17 + CUDA) |
+| `Makefile` | Compila com um comando só |
+| `README.md` | Este arquivo |
+
+---
+
+## 🎯 Objetivo do código
+
+1. Aloja **128 floats** na CPU e na GPU.  
+2. Preencche `x = 1.0`, `y = 2.0`.  
+3. Executa kernel `add<<<blocks, 256>>>` – **1 thread por elemento**.  
+4. Devolve o vetor `z = x + y` (valor 3 em todas as posições).  
+5. Imprime **8 linhas × 16 colunas** alinhadas.  
+6. Mostra **tempo de execução total** (alocação → cópia → kernel → cópia → print).
+
+---
+
+## 🔧 Requisitos
+
+- GPU NVIDIA com Compute Capability ≥ 3.5  
+- CUDA Toolkit instalado (provê `nvcc`)  
+- Compilador C++ (g++ ou clang)  
+
+```
+
+---
+
+## 🚀 Compilação & execução
+
+Compilar:
+```bash
+nvcc -arch=sm_75 -std=c++17 -O3 cuda-hello-table.cu -o cuda-hello-table
+./cuda-hello-table
+```
+
+
+## 🖥️ Saída esperada
+
+```
+Resultado: 
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+[INFO]: 4 ms
+```
+
+---
+
+
+| Tarefa | O que aprenderá |
+|--------|-----------------|
+| Altere `N` para 1 048 576 | Grande escalabilidade |
+| Troque `threads` 256 → 512 / 1024 | Escolha ideal de bloco |
+| Use `cudaMallocManaged` | Unified Memory (menos cópias) |
+| Adicione `__shared__ float buf[256]` | Memória compartilhada |
+| Troque `add` por `axpy` (y = a*x + y) | BLAS nível 1 |
+
+
+
+---
+
 - **Cálculo**: soma elemento-a-elemento.  
 - **Notação**: índices 1-D mapeados em 2-D por `lin = i / cols`, `col = i % cols`.  
 - **Complexidade**: Θ(N) trabalho, Θ(N) tráfego de memória.  

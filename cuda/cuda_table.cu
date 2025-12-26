@@ -5,7 +5,7 @@
 #include <cuda_runtime.h>
 
 
-#define N 128          // 8 × 16
+#define N 512     // 8 × 16
 
 __global__
 void add(int n, const float *x, const float *y, float *z)
