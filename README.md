@@ -31,9 +31,6 @@ Pequeno projeto de programação em GPUs: Soma de 128 números na GPU e geraçã
 - CUDA Toolkit instalado (provê `nvcc`)  
 - Compilador C++ (g++ ou clang)  
 
-```
-
----
 
 ## 🚀 Compilação & execução
 
@@ -98,33 +95,7 @@ Resultado:
 
 ---
 
-## 3. Mapeamento Índice ⇨ Tabela 2-D
-
-Linha-major (row-major):
-
-```
-índice 1-D:   0  1  2 … 15 | 16 … 31 | … | 112 … 127
-tabela 2-D:  linha 0     | linha 1  | … | linha 7
-```
-
-Fórmula de conversão:
-
-```
-lin = i / 16        (divisão inteira)
-col = i % 16        (resto)
-```
-
-Por isso o laço de impressão é:
-
-```cpp
-for (lin = 0 … 7)
-    for (col = 0 … 15)
-        print h_z[lin*16 + col]
-```
-
----
-
-## 4. Fluxo de Dados 
+## 3. Fluxo de Dados 
 
 ```
 CPU (HOST)                     GPU (DEVICE)
@@ -138,7 +109,7 @@ CPU (HOST)                     GPU (DEVICE)
 
 ---
 
-## 5. Kernel – Algebricamente
+## 4. Kernel – Algebricamente
 
 Kernel `add`:
 
@@ -159,7 +130,7 @@ A condição `if` evita **out-of-bounds** quando `N` não é múltiplo de `block
 
 ---
 
-## 6. Complexidade & Métricas
+## 5. Complexidade & Métricas
 
 | Grandeza | Valor | Notação |
 |----------|-------|---------|
@@ -171,14 +142,14 @@ A condição `if` evita **out-of-bounds** quando `N` não é múltiplo de `block
 
 ---
 
-## 7. Warm-up & Sincronização
+## 6. Warm-up & Sincronização
 
 - `cudaDeviceSynchronize()` após o kernel = **barreira global** – CPU só prossegue quando **todas as threads** terminaram.  
 - Sem ela o cronômetro mediria **só o lançamento**, não a execução.
 
 ---
 
-## 8. Visual
+## 7. Visual
 
 - 128 = 2⁷ → fatoração 2⁴ × 2³ = 16 × 8 gera **tabela quadrada visualmente agradável**.  
 - Facilita verificar de relance se **todos os elementos** estão corretos.
