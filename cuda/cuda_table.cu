@@ -5,16 +5,31 @@
 #include <cuda_runtime.h>
 
 
-#define N 2048     // 8 × 16
+// Função para checar erros 
+#define CUDA_CHECK(call) \
+    do { \
+        cudaError_t err = call; \
+        if (err != cudaSuccess) { \
+            std::cerr << "CUDA Error em " << __FILE__ << ":" << __LINE__ \
+                      << " - " << cudaGetErrorString(err) << std::endl; \
+            exit(EXIT_FAILURE); \
+        } \
+    } while (0)
 
+
+#define N 1000   // 8 × 16
+                   
+
+//GPU
 __global__
 void add(int n, const float *x, const float *y, float *z)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n) z[i] = x[i] + y[i];
-    printf("[GPU]:[block %d]-[thread %d]\n",blockIdx.x, threadIdx.x);
+    printf("[GPU]:[block %d]-[thread %d]-[blockDim %d]\n",blockIdx.x, threadIdx.x, blockDim.x);
 }
 
+// CPU
 int main()
 {
   // Tempo de exucução
@@ -34,16 +49,16 @@ int main()
 
     // 2) aloca DEVICE
     float *d_x, *d_y, *d_z;
-    cudaMalloc(&d_x, bytes);
-    cudaMalloc(&d_y, bytes);
-    cudaMalloc(&d_z, bytes);
+    CUDA_CHECK(cudaMalloc(&d_x, bytes));
+    CUDA_CHECK(cudaMalloc(&d_y, bytes));
+    CUDA_CHECK(cudaMalloc(&d_z, bytes));
 
     // 3) copiando Host -> Device
     cudaMemcpy(d_x, h_x, bytes, cudaMemcpyHostToDevice);
     cudaMemcpy(d_y, h_y, bytes, cudaMemcpyHostToDevice);
 
     // 4) executa kernel
-    int threads = 256;
+    int threads = 1024;
     int blocks  = (N + threads - 1) / threads;
     add<<<blocks, threads>>>(N, d_x, d_y, d_z);
 
@@ -52,8 +67,13 @@ int main()
     // 5) copiando Device -> Host
     cudaMemcpy(h_z, d_z, bytes, cudaMemcpyDeviceToHost);
 
+   cudaDeviceProp prop;
+   cudaGetDeviceProperties(&prop, 0);
+//   std::cout << "[GPU]: " << prop.name << std::endl;
+   std::cout << "\nQuantidade máxima de threads por bloco: " << prop.maxThreadsPerBlock << std::endl;
     // 6) imprime tabela 8 × 16
-  std::cout << "GPU Programming : \n";
+
+   std::cout << "GPU: " <<prop.name << std::endl;
     for (int lin = 0; lin < 8; ++lin) {
         for (int col = 0; col < 16; ++col)
             std::cout << std::setw(4) << static_cast<int>(h_z[lin * 16 + col]);
@@ -65,12 +85,11 @@ int main()
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
     std::cout << "[INFO]:  " << duration.count() << " ms" << std::endl;
 
-
     // 7) cleanup p finalizar
-    delete [] h_x;
-    delete [] h_y;
-    delete [] h_z;
-    cudaFree(d_x);
-    cudaFree(d_y);
-    cudaFree(d_z);
+   delete [] h_x;
+   delete [] h_y;
+   delete [] h_z;
+   cudaFree(d_x);
+   cudaFree(d_y);
+   cudaFree(d_z);
 }
