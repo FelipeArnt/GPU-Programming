@@ -5,13 +5,14 @@
 #include <cuda_runtime.h>
 
 
-#define N 128     // 8 × 16
+#define N 2048     // 8 × 16
 
 __global__
 void add(int n, const float *x, const float *y, float *z)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n) z[i] = x[i] + y[i];
+    printf("[GPU]:[block %d]-[thread %d]\n",blockIdx.x, threadIdx.x);
 }
 
 int main()
