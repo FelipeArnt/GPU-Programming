@@ -17,7 +17,7 @@
     } while (0)
 
 
-#define N 1024
+#define N 1200
 
 //GPU
 
@@ -33,6 +33,7 @@ void add(int n, const float *x, const float *y, float *z)
 int main()
 {
   // Tempo de exucução
+  cudaDeviceSynchronize();
   auto start = std::chrono::high_resolution_clock::now();
 
   size_t bytes = N * sizeof(float);
@@ -58,12 +59,12 @@ int main()
     cudaMemcpy(d_y, h_y, bytes, cudaMemcpyHostToDevice);
 
     // 4) executa kernel
-    int threads = 1024;
+    int threads = 64;
     int blocks  = (N + threads - 1) / threads;
     add<<<blocks, threads>>>(N, d_x, d_y, d_z);
 
     cudaDeviceSynchronize();
-
+    auto stop = std::chrono::high_resolution_clock::now();
     // 5) copiando Device -> Host
     cudaMemcpy(h_z, d_z, bytes, cudaMemcpyDeviceToHost);
 
@@ -80,7 +81,7 @@ int main()
         std::cout << '\n';
     }
 
-    auto stop = std::chrono::high_resolution_clock::now();
+    
 
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
     std::cout << "[INFO]:  " << duration.count() << " ms" << std::endl;
