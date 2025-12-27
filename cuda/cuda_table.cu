@@ -17,10 +17,10 @@
     } while (0)
 
 
-#define N 1000   // 8 × 16
-                   
+#define N 1024
 
 //GPU
+
 __global__
 void add(int n, const float *x, const float *y, float *z)
 {
