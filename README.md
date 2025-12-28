@@ -84,7 +84,7 @@ cudaFree                   ────►  liberação única
 
 ```bash
 
-nvcc -arch=sm_75 -std=c++17 -O3 cuda.cu -o cuda
+nvcc -arch=sm_75 -O3 cuda.cu -o cuda
 
 ./cuda
 ```
