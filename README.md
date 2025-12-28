@@ -2,23 +2,14 @@
 
 Pequeno projeto de programação em GPUs: Soma de 128 números na GPU e geração do resultado no formato de **tabela 8 × 16** para exibir a paralelização.
 
----
-
-## 📦 O que está aqui
-
-| Arquivo | Descrição |
-|---------|-----------|
-| `cuda_table.cu` | Código-fonte completo (C++17 + CUDA) |
-| `Makefile` | Compila com um comando só |
-| `README.md` | Este arquivo |
 
 ---
 
-## 🎯 Objetivo do código
+## Objetivo do código
 
 1. Aloja **128 floats** na CPU e na GPU.  
-2. Preencche `x = 1.0`, `y = 2.0`.  
-3. Executa kernel `add<<<blocks, 256>>>` – **1 thread por elemento**.  
+2. Preencche `x = 35.0`, `y = 34.0`.  
+3. Executa kernel `add<<<blocks, threads>>>` – **1 thread por elemento**.  
 4. Devolve o vetor `z = x + y` (valor 3 em todas as posições).  
 5. Imprime **8 linhas × 16 colunas** alinhadas.  
 6. Mostra **tempo de execução total** (alocação → cópia → kernel → cópia → print).
@@ -36,40 +27,41 @@ Pequeno projeto de programação em GPUs: Soma de 128 números na GPU e geraçã
 
 Compilar:
 ```bash
-nvcc -arch=sm_75 -std=c++17 -O3 cuda-hello-table.cu -o cuda-hello-table
-./cuda-hello-table
+
+nvcc -arch=sm_75 -std=c++17 -O3 cuda.cu -o cuda
+
+./cuda
 ```
 
 
 ## 🖥️ Saída esperada
 
+
+```bash
+
+./cuda
+[GPU]: NVIDIA GeForce GTX 1650
+[Computação]: 7.5
+[Multiprocessadores]: 14
+[Total CUDA Cores]: 896
+[Kernel]: 6.82404ms
+
+[Threads por bloco]: 1024
+
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+
 ```
-Resultado: 
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
-[INFO]: 4 ms
-```
+
 
 ---
 
-
-| Tarefa | O que aprenderá |
-|--------|-----------------|
-| Altere `N` para 1 048 576 | Grande escalabilidade |
-| Troque `threads` 256 → 512 / 1024 | Escolha ideal de bloco |
-| Use `cudaMallocManaged` | Unified Memory (menos cópias) |
-| Adicione `__shared__ float buf[256]` | Memória compartilhada |
-| Troque `add` por `axpy` (y = a*x + y) | BLAS nível 1 |
-
-
-
----
 
 - **Cálculo**: soma elemento-a-elemento.  
 - **Notação**: índices 1-D mapeados em 2-D por `lin = i / cols`, `col = i % cols`.  
@@ -79,7 +71,7 @@ Resultado:
 
 ## 1. Cálculo
 
-> **z = x + y**, onde **x = 1.0**, **y = 2.0** → **z = 3.0** em **todas as 128 posições**.
+> **z = x + y**, onde **x = 35.0**, **y = 34.0** → **z = 69.0** em **todas as 128 posições**.
 
 ---
 
