@@ -100,6 +100,7 @@
                 for (int col = 0; col < 16; ++col)
                 std::cout << std::setw(4) << static_cast<int>(z[lin * 16 + col]);
                 std::cout << '\n';
+
             }    
         }
         
