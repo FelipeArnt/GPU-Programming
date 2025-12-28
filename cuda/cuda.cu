@@ -7,7 +7,7 @@
 
 #include <cuda_runtime.h>
 
-/* ---------- macros de erro, existe a lib cudacheck_help, mas não consegui importar------------------------------------------------- */
+// macros de erro, existe a lib cudacheck_help, mas não consegui importar.
 #define CUDA_CHECK(call)                                                       \
     do {                                                                       \
         cudaError_t err = (call);                                              \
@@ -18,14 +18,14 @@
         }                                                                      \
     } while (0)
 
-/* ---------- kernel --------------------------------------------------------- */
+// Kernel
 __global__ void add(int n, const float *x, const float *y, float *z)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n)  z[i] = x[i] + y[i];
 }
 
-/* ---------- utilitários ---------------------------------------------------- */
+// Utilitario de tempo
 static double wtime(void)   /* segundos desde a época – precisão ~ms */
 {
     struct timespec ts;
@@ -48,11 +48,11 @@ static int convertSMVer2Cores(int major, int minor)
     }
 }
 
-/* ---------- constantes ----------------------------------------------------- */
+// Constantes
 enum { N = 1 << 20, THREADS = 256 };
 enum { BLOCKS = (N + THREADS - 1) / THREADS };
 
-/* ---------- main ----------------------------------------------------------- */
+// Main 
 int main(void)
 {
     const size_t bytes = N * sizeof(float);
@@ -75,7 +75,7 @@ int main(void)
     CUDA_CHECK(cudaDeviceSynchronize());
     const double t1 = wtime();
 
-    /* informações do(s) dispositivo(s) */
+    /* informações do dispositivo*/
     int deviceCount;
     CUDA_CHECK(cudaGetDeviceCount(&deviceCount));
 
@@ -106,6 +106,7 @@ int main(void)
         }
     }
 
+// cleanup
     CUDA_CHECK(cudaFree(x));
     CUDA_CHECK(cudaFree(y));
     CUDA_CHECK(cudaFree(z));
