@@ -8,7 +8,7 @@
     // IOSTREAM e IOMANIP ==> formatação da saída, 
     // CHRONO ==> medição de tempo,
     // CUDA_RUNTIME ==> API CUDA.
-    // ALGORITHM ==>  
+    // ALGORITHM ==>  ConvertSMVer2Cores
 
     // Macro CUDA_CHECK encapsula qualquer chamada/call CUDA. Se falhar, imprime (__FILE__) (__LINE__), a mensagem de erro e dps aborta.
     #define CUDA_CHECK(call) \
@@ -27,8 +27,6 @@
     {
         int i = blockIdx.x * blockDim.x + threadIdx.x;
         if (i < n) z[i] = x[i] + y[i];
-        
-    // printf("[GPU]:\t[block %d]-[thread %d]-[blockDim %d]\n",blockIdx.x, threadIdx.x, blockDim.x);
     }
 
     // Função para converter a capacidade de computação para o numero de COREs por SM.
@@ -47,7 +45,7 @@
     }
 
     constexpr int N = 1 << 20;          // 1 << 20 = 1Mi elementos
-    constexpr int THREADS = 512;        //  128/256/512/1024
+    constexpr int THREADS = 128;        //  128/256/512/1024
     constexpr int BLOCKS  = (N + THREADS - 1) / THREADS;
 
     int main(int argc, char** argv)
@@ -88,12 +86,12 @@
         int coresPerSM = ConvertSMVer2Cores(prop.major, prop.minor);
         int totalCores = coresPerSM * prop.multiProcessorCount;
         
-        std::cout << "[Device] " << i << ": " << prop.name << std::endl;
-        std::cout << "Capacidade de Computação: " << prop.major << "." << prop.minor << std::endl;
-        std::cout << "Contagem de Multiprocessadores: " << prop.multiProcessorCount << std::endl;
-        std::cout << "Total CUDA Cores: " << totalCores << std::endl;
-        std::cout << "[Kernel-Time " << ms << "ms]" << std::endl;
-        std::cout << "\nQuantidade máxima de threads por bloco: " << prop.maxThreadsPerBlock << std::endl;
+        std::cout << "[GPU]: "<< prop.name << std::endl;
+        std::cout << "[Computação]: " << prop.major << "." << prop.minor << "" << std::endl;
+        std::cout << "[Multiprocessadores]: " << prop.multiProcessorCount << std::endl;
+        std::cout << "[Total CUDA Cores]: " << totalCores << std::endl;
+        std::cout << "[Kernel]: " << ms << "ms" << std::endl;
+        std::cout << "\n[Threads por bloco]: " << prop.maxThreadsPerBlock << std::endl;
 
 
         // validação ==> Caso todas posições sejam preenchidas com 69 (35 + 34), 
