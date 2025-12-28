@@ -9,7 +9,7 @@
 
 // src do kernel
 const char *kernel_source = 
-"__kernel void vector_add(__global const float *A, \n"
+"__kernel void add(__global const float *A, \n"
 "                         __global const float *B, \n"
 "                         __global float *C, \n"
 "                         const unsigned int size) { \n"
@@ -56,6 +56,51 @@ int main()
     bufferB = clCreateBuffer(context, CL_MEM_READ_ONLY, SIZE * sizeof(float), NULL, NULL);
     bufferC = clCreateBuffer(context, CL_MEM_READ_ONLY, SIZE * sizeof(float), NULL, NULL);
 
+    clEnqueueWriteBuffer(queue, bufferA, CL_TRUE, 0, SIZE * sizeof(float), A, 0, NULL, NULL);
+    clEnqueueWriteBuffer(queue, bufferB, CL_TRUE, 0, SIZE * sizeof(float), B, 0, NULL, NULL);
 
+// Criando e compilando o kernel
+
+    program = clCreateProgramWithSource(context, 1, &kernel_source, NULL, NULL);
+    clBuildProgram(program, 1, &device, NULL, NULL, NULL);
+    kernel = clCreateKernel(program, "add", NULL);
+
+// Configurando argumentos
+
+    clSetKernelArg(kernel, 0, sizeof(cl_mem), &bufferA);
+    clSetKernelArg(kernel, 1, sizeof(cl_mem), &bufferB);
+    clSetKernelArg(kernel, 2, sizeof(cl_mem), &bufferC);
+    clSetKernelArg(kernel, 3, sizeof(int), &SIZE);
+
+// Executando
+    
+    size_t local_size = 256;
+    size_t global_size = ((SIZE + local_size - 1) / local_size) * local_size;
+
+
+    clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, NULL, 0, NULL, NULL);
+    clFinish(queue);
+
+// Lendo resultado
+
+    clEnqueueReadBuffer(queue, bufferC, CL_TRUE, 0, SIZE * sizeof(float), C, 0, NULL, NULL);
+
+    printf("Primeiros 10 resultado:\n");
+    for (int i = 0; i < 10; i++)
+    {
+        printf("C[%d] = %.1f\n", i, C[i]);
+    }
+
+// Limpando buffers, kernel, program, ....
+
+    clReleaseMemObject(bufferA);
+    clReleaseMemObject(bufferB);
+    clReleaseMemObject(bufferC);
+    clReleaseKernel(kernel);
+    clReleaseProgram(program);
+    clReleaseCommandQueue(queue);
+    clReleaseContext(context);
+
+    free(A); free(B); free(C);
     return 0;
 }
