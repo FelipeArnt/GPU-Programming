@@ -1,11 +1,13 @@
 # 📊 CUDA – Notação, Cálculo & Anatomia do Algoritmo  
 
+> ####  Primeira experiência com programação em GPUs.
+
+
 ---
 
 ## 1. Objetivo
 Somar **1 Mi de floats** na GPU e, **no fim**, mostrar apenas as **128 primeiras posições** em formato 8 × 16 para conferir a paralelização.
-
-> 1 048 576 elementos com impressão 8 × 16 para validação visual.
+> 1 048 576 elementos e o resultado é impresso 8 × 16 para validação visual.
 
 ---
 
