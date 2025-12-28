@@ -1,5 +1,4 @@
     #include <iostream>
-    #include <cmath>
     #include <iomanip>
     #include <chrono>
     #include <cuda_runtime.h>
@@ -45,7 +44,7 @@
     }
 
     constexpr int N = 1 << 20;          // 1 << 20 = 1Mi elementos
-    constexpr int THREADS = 128;        //  128/256/512/1024
+    constexpr int THREADS = 256;        //  128/256/512/1024
     constexpr int BLOCKS  = (N + THREADS - 1) / THREADS;
 
     int main(int argc, char** argv)
@@ -64,7 +63,7 @@
         CUDA_CHECK(cudaDeviceSynchronize());
         
         auto t0 = std::chrono::steady_clock::now();
-
+        
         add<<<BLOCKS, THREADS>>>(N, x, y, z);
         CUDA_CHECK(cudaGetLastError());
         CUDA_CHECK(cudaDeviceSynchronize());
@@ -86,7 +85,7 @@
         int coresPerSM = ConvertSMVer2Cores(prop.major, prop.minor);
         int totalCores = coresPerSM * prop.multiProcessorCount;
         
-        std::cout << "[GPU]: "<< prop.name << std::endl;
+        std::cout << "\n[GPU]: "<< prop.name << std::endl;
         std::cout << "[Computação]: " << prop.major << "." << prop.minor << "" << std::endl;
         std::cout << "[Multiprocessadores]: " << prop.multiProcessorCount << std::endl;
         std::cout << "[Total CUDA Cores]: " << totalCores << std::endl;
@@ -97,10 +96,10 @@
         // validação ==> Caso todas posições sejam preenchidas com 69 (35 + 34), 
         bool ok = true;
         for (int idx = 0; idx < N; ++idx) ok &= (z[idx] == 69.0f);
-        for (int lin = 0; lin < 8; ++lin) {
-            for (int col = 0; col < 16; ++col)
+            for (int lin = 0; lin < 8; ++lin) {
+                for (int col = 0; col < 16; ++col)
                 std::cout << std::setw(4) << static_cast<int>(z[lin * 16 + col]);
-            std::cout << '\n';
+                std::cout << '\n';
             }    
         }
         

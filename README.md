@@ -3,6 +3,32 @@
 > ####  Primeira experiência com programação em GPUs.
 
 
+```bash
+
+GPU
+├── Streaming Multiprocessors (SMs) - dezenas
+│   ├── CUDA Cores/Stream Processors - centenas por SM
+│   ├── Shared Memory - memória rápida compartilhada
+│   └── Registers - registradores locais
+├── Global Memory - memória principal (lenta)
+└── Cache Hierarchy - sistema de cache
+
+
+Grid (Grade) - Todo o trabalho
+└── Blocks (Blocos) - grupos de threads
+    └── Threads - unidade básica de execução
+
+
+Grid: Processar uma imagem 1920x1080
+├── Block 0: Processar pixels 0-255
+│   ├── Thread 0: Pixel 0
+│   ├── Thread 1: Pixel 1
+│   └── ... (256 threads)
+├── Block 1: Processar pixels 256-511
+└── ... (8640 blocos no total)
+```
+
+
 ---
 
 ## 1. Objetivo
@@ -67,22 +93,28 @@ nvcc -arch=sm_75 -std=c++17 -O3 cuda.cu -o cuda
 
 ## 6. Saída Esperada (GTX 1650)
 
-```
+```zsh
+~/Projetos/GPU-Programming/cuda (main*) » make run
+
+./cuda
+
 [GPU]: NVIDIA GeForce GTX 1650
 [Computação]: 7.5
 [Multiprocessadores]: 14
 [Total CUDA Cores]: 896
-[Kernel]: 6.82404ms ms
+[Kernel]: 3.8847ms
+
 [Threads por bloco]: 1024
 
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+
 ```
 
 ---
