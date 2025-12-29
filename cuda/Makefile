@@ -1,6 +1,6 @@
 CXX          := nvcc
 ARCH         := sm_75
-CXXFLAGS     := -std=c++17 -O3
+CXXFLAGS     := -std=gcc -O3
 TARGET       := cuda
 SOURCE       := cuda.cu
 
