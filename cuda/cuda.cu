@@ -49,7 +49,7 @@ static int convertSMVer2Cores(int major, int minor)
 }
 
 // Constantes
-enum { N = 1 << 20, THREADS = 256 };
+enum { N = 1 << 20, THREADS = 128 };
 enum { BLOCKS = (N + THREADS - 1) / THREADS };
 
 // Main 
@@ -96,7 +96,7 @@ int main(void)
         /* validação */
         int ok = 1;
         for (int i = 0; i < N && ok; ++i) ok &= (z[i] == 69.0f);
-        printf("Validação: %s\n", ok ? "OK" : "ERROR");
+        printf("\nValidação: %s\n", ok ? "OK\n" : "ERROR");
 
         /* amostra 8×16 */
         for (int lin = 0; lin < 8; ++lin) {
