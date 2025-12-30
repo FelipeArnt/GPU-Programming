@@ -22,7 +22,7 @@
 __global__ void add(int n, const float *x, const float *y, float *z)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < n)  z[i] = x[i] + y[i];
+    if (i < n)  z[i] = x[i] + y[i];    
 }
 
 // Utilitario de tempo
@@ -33,10 +33,12 @@ static double wtime(void)   /* segundos desde a época – precisão ~ms */
     return ts.tv_sec + ts.tv_nsec * 1e-9;
 }
 
+//Função para converter a capacidade de computação.
+
 static int convertSMVer2Cores(int major, int minor)
 {
     switch (major) {
-    case 2: return (minor == 1) ? 48 : 32;          /* Fermi   */
+    case 2: return (minor == 1) ? 48 : 32;              /* Fermi   */
     case 3: return 192;                               /* Kepler  */
     case 5: return 128;                               /* Maxwell */
     case 6: return (minor == 0) ? 64  : 128;          /* Pascal  */
@@ -49,33 +51,36 @@ static int convertSMVer2Cores(int major, int minor)
 }
 
 // Constantes
-enum { N = 1 << 20, THREADS = 128 };
+enum { N = 1 << 20, THREADS = 256 };
 enum { BLOCKS = (N + THREADS - 1) / THREADS };
 
 // Main 
 int main(void)
 {
     const size_t bytes = N * sizeof(float);
+
     float *x, *y, *z;
 
-    /* alocação unificada */
+// alocação unificada 
     CUDA_CHECK(cudaMallocManaged((void **)&x, bytes));
     CUDA_CHECK(cudaMallocManaged((void **)&y, bytes));
     CUDA_CHECK(cudaMallocManaged((void **)&z, bytes));
 
-    /* inicialização */
+
+// inicialização 
     for (int i = 0; i < N; ++i) { x[i] = 35.0f;  y[i] = 34.0f; }
 
     CUDA_CHECK(cudaDeviceSynchronize());
 
-    /* execução */
+// execução
     const double t0 = wtime();
     add<<<BLOCKS, THREADS>>>(N, x, y, z);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
     const double t1 = wtime();
 
-    /* informações do dispositivo*/
+
+// informações do dispositivo
     int deviceCount;
     CUDA_CHECK(cudaGetDeviceCount(&deviceCount));
 
@@ -90,7 +95,7 @@ int main(void)
         printf("[Computação]: %d.%d\n", prop.major, prop.minor);
         printf("[Multiprocessadores]: %d\n", prop.multiProcessorCount);
         printf("[Total CUDA Cores]: %d\n", totalCores);
-        printf("[Kernel]: %.3f ms\n", (t1 - t0) * 1e3);
+        printf("[Kernel time]: %.3fms\n", (t1 - t0) * 1e3);
         printf("[Threads por bloco]: %d\n", prop.maxThreadsPerBlock);
 
         /* validação */

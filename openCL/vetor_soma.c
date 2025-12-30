@@ -20,7 +20,7 @@ const char *kernel_source =
 //entry point
 int main()
 {
-    const int SIZE = 100000;
+    const int SIZE = 1000000;
 //Allocando    
     float *A = malloc(SIZE * sizeof(float));
     float *B = malloc(SIZE * sizeof(float));
