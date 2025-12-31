@@ -30,8 +30,8 @@ int main()
 //Iniciando os dados
 
     for (int i = 0; i < SIZE; i++){
-        A[i] = i * 35.0f;
-        B[i] = i * 34.0f;   
+        A[i] = 35.0f;
+        B[i] = 34.0f;   
     }
 
 //openCL setup
@@ -85,11 +85,11 @@ int main()
 
     clEnqueueReadBuffer(queue, bufferC, CL_TRUE, 0, SIZE * sizeof(float), C, 0, NULL, NULL);
 
-    printf("Primeiros 10 resultado:\n");
-    for (int i = 0; i < 10; i++)
-    {
-        printf("C[%d] = %.1f\n", i, C[i]);
-    }
+    printf("\n");
+    for (int lin = 0; lin < 8; lin++)
+      for(int col = 0; col < 16; col++)
+          printf("%4d", (int)C[lin * 16 + col]);
+      putchar('\n');
 
 // Limpando buffers, kernel, program, ....
 

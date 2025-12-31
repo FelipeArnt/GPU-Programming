@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <CL/cl.h>
-
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
+#define CL_TARGET_OPENCL_VERSION 300
 
 
 int main()
