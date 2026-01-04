@@ -156,7 +156,7 @@ Validação: OK
 [Total CUDA Cores]: 896
 [Max threads por bloco]: 1024
 [Max threads por SM]: 1024
-[Kernel time (CUDA events)]: ~X.XXX ms
+[Kernel time (CUDA events)]: ~4.049 ms
 
 ```
 
