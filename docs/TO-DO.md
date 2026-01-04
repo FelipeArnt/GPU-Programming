@@ -3,39 +3,17 @@
 
 
 
-
-
-```
-
-~/Projetos/GPU-Programming/cuda (main*) » make run
-
-./cuda
-
-[GPU]: NVIDIA GeForce GTX 1650
-[Computação]: 7.5
-[Multiprocessadores]: 14
-[Total CUDA Cores]: 896
-[Kernel]: 3.8847ms
-
-[Threads por bloco]: 1024
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-
-```
 Próximos passos do projeto GPU-Programming em CUDA.
 
 ### CUDA
+
 - https://docs.nvidia.com/cuda/cuda-c-programming-guide/
 - https://docs.nvidia.com/cuda/cuda-runtime-api/
 
 # KERNEL
+
 - https://sysprog21.github.io/lkmpg/#introduction
+
 
 ---
 
