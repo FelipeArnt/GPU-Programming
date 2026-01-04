@@ -1,132 +1,175 @@
-# 📊 CUDA – Notação, Cálculo & Anatomia do Algoritmo  
+## 📊 CUDA – Notação, Cálculo & Anatomia do Algoritmo
 
-> ####  Primeira experiência com programação em GPUs.
+> #### Primeira experiência com programação em GPUs (GTX 1650, Unified Memory + grid-stride loop).
 
+---
+
+## 1. Arquitetura & Organização
 
 ```bash
-
 GPU
 ├── Streaming Multiprocessors (SMs) - dezenas
 │   ├── CUDA Cores/Stream Processors - centenas por SM
 │   ├── Shared Memory - memória rápida compartilhada
 │   └── Registers - registradores locais
-├── Global Memory - memória principal (lenta)
-└── Cache Hierarchy - sistema de cache
-
+├── Global Memory   - memória principal (mais lenta)
+└── Cache Hierarchy - L1/L2, etc.
 
 Grid (Grade) - Todo o trabalho
 └── Blocks (Blocos) - grupos de threads
-    └── Threads - unidade básica de execução
-
-
-Grid: Processar uma imagem 1920x1080
-├── Block 0: Processar pixels 0-255
-│   ├── Thread 0: Pixel 0
-│   ├── Thread 1: Pixel 1
-│   └── ... (256 threads)
-├── Block 1: Processar pixels 256-511
-└── ... (8640 blocos no total)
+    └── Threads     - unidade básica de execução
 ```
 
+Com **grid-stride loop**, cada thread pode processar **vários elementos** espaçados por um `stride`:
 
----
-
-## 1. Objetivo
-Somar **1 Mi de floats** na GPU e, **no fim**, mostrar apenas as **128 primeiras posições** em formato 8 × 16 para conferir a paralelização.
-> 1 048 576 elementos e o resultado é impresso 8 × 16 para validação visual.
-
----
-
-## 2. Convenções & Notação
-
-| Símbolo | Significado | Valor aqui |
-|---------|-------------|------------|
-| **N** | total de elementos | 1 048 576 (1 « 20) |
-| **threads por bloco** | `blockDim.x` | 128 |
-| **nº de blocos** | `gridDim.x` = `(N+127)/128` | 8 192 |
-| **índice global** | `i = blockIdx.x·blockDim.x + threadIdx.x` | 0 … 1 048 575 |
-| **memória** | `cudaMallocManaged` (unificado) | 3 × 4 MiB |
-
----
-
-## 3. Kernel – Algebricamente
-
-```
-∀ i ∈ [0, N-1] :
-    z[i] ← x[i] + y[i]          // x = 35, y = 34 → z = 69
-```
-
-Código:
-```cpp
+```c
 __global__ void add(int n, const float *x, const float *y, float *z) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < n)  z[i] = x[i] + y[i];
+    
+    int idx    = blockIdx.x * blockDim.x + threadIdx.x;
+    int stride = blockDim.x * gridDim.x;
+
+    for (int i = idx; i < n; i += stride) {
+        z[i] = x[i] + y[i];
+    }
 }
-```
+```  
+
+Isso torna o kernel flexível para qualquer combinação de `blocks/grid` e `threads/block`.
 
 ---
+
+## 2. Objetivo
+
+Somar **1 Mi de floats** na GPU usando Unified Memory e verificar a paralelização:
+
+- `x[i] = 35`, `y[i] = 34` → `z[i] = 69` para `0 ≤ i < N`.
+- Ao final, imprimir as **128 primeiras posições** em formato **8 × 16** para validação visual.
+
+Parâmetros usados:
+
+| Símbolo              | Significado            | Valor aqui                 |
+|----------------------|------------------------|----------------------------|
+| **N**                | total de elementos     | 1 048 576 (`1 << 20`)      |
+| **threads/block**    | `blockDim.x`           | 256 (ajustado ao device)   |
+| **blocks/grid**      | `gridDim.x`            | `(N + 255) / 256`          |
+| **alocação**         | `cudaMallocManaged`    | 3 vetores de 4 MiB         |
+| **tempo do kernel**  | medido com eventos     | ~3–7 ms na GTX 1650        |  
+
+Na inicialização, o código ainda consulta as propriedades do device (`cudaGetDeviceProperties`) para garantir que `threadsPerBlock` não excede `maxThreadsPerBlock`.
+
+---
+
+## 3. Kernel – Forma Algébrica
+
+Formalmente:
+
+```text
+∀ i ∈ [0, N-1] :
+    z[i] ← x[i] + y[i]
+```
+
+Implementação com grid-stride loop:
+
+```c
+
+__global__ void add(int n, const float *x, const float *y, float *z) {
+    int idx    = blockIdx.x * blockDim.x + threadIdx.x;
+    int stride = blockDim.x * gridDim.x;
+
+    for (int i = idx; i < n; i += stride) {
+        z[i] = x[i] + y[i];
+    }
+}
+```  
+
+- `idx` é o índice global inicial da thread.  
+- `stride = blockDim.x * gridDim.x` é o “passo” entre elementos processados pela mesma thread.
+
 
 ## 4. Fluxo de Dados (Unified Memory)
 
+O código usa **Unified Memory** com `cudaMallocManaged`, de forma que host e device enxergam os mesmos ponteiros.
+
+```text
+
+CPU (host)                          GPU (device)
+x,y,z ← cudaMallocManaged  ──────►  memória unificada, páginas migradas sob demanda
+init_vetores(x,y)          ──────►  dados já prontos para o kernel
+run_kernel(...)             ──────►  add<<<grid,block>>> soma x e y em z
+cudaDeviceSynchronize()     ◄──────  garante término do kernel
+tabela(z)                   ◄──────  leitura direta do mesmo ponteiro
+cudaFree(x,y,z)             ──────►  desalocação única
 ```
-CPU (host)                        GPU (device)
-x,y,z ← cudaMallocManaged  ────►  idem (paginado on-demand)
-std::generate(x,y valor)   ────►  residente já visível
-add<<<BLOCKS,128>>>(…)     ────►  kernel executa
-cudaDeviceSynchronize()    ◄────  barreira global
-imprime 8×16               ◄────  mesma memória
-cudaFree                   ────►  liberação única
-```
+
+Não há `cudaMemcpy` explícito; o driver migra páginas conforme uso.
 
 ---
 
-## 5. Compilação & Execução
+## 5. Medição de Desempenho
 
-```bash
+A versão final mede **somente o tempo do kernel** usando **eventos CUDA**:
 
-nvcc -arch=sm_75 cuda.cu -o cuda
+```c
+double run_kernel(int n, float *x, float *y, float *z, int threadsPerBlock, int blocksPerGrid)
+{
+    cudaEvent_t start, stop;
+    CUDA_CHECK(cudaEventCreate(&start));
+    CUDA_CHECK(cudaEventCreate(&stop));
 
-./cuda
+    CUDA_CHECK(cudaEventRecord(start));
+    add<<<blocksPerGrid, threadsPerBlock>>>(n, x, y, z);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaEventRecord(stop));
+
+    CUDA_CHECK(cudaEventSynchronize(stop));
+    float ms = 0.0f;
+    CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
+
+    CUDA_CHECK(cudaEventDestroy(start));
+    CUDA_CHECK(cudaEventDestroy(stop));
+    return (double)ms;
+}
 ```
 
----
+O `main` calcula `threadsPerBlock` (256, limitado por `prop.maxThreadsPerBlock`) e `blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock`, passa isso para `run_kernel`, valida o resultado e imprime uma amostra 8×16.
+
+***
 
 ## 6. Saída Esperada (GTX 1650)
 
-```zsh
-~/Projetos/GPU-Programming/cuda (main*) » make run
+Exemplo típico de saída:
 
-./cuda
+```bash
+Validação: OK
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
 
 [GPU]: NVIDIA GeForce GTX 1650
 [Computação]: 7.5
 [Multiprocessadores]: 14
 [Total CUDA Cores]: 896
-[Kernel]: 3.8847ms
-
-[Threads por bloco]: 1024
-
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
-69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
+[Max threads por bloco]: 1024
+[Max threads por SM]: 1024
+[Kernel time (CUDA events)]: ~X.XXX ms
 
 ```
+
+Os valores de tempo dependem da máquina, mas na GTX 1650 ficam tipicamente na faixa de poucos milissegundos para 1 Mi de elementos.
 
 ---
 
 ## 7. Complexidade & Métricas
 
-| Grandeza | Valor | Notação |
-|----------|-------|---------|
-| Work-items | 1 048 576 | Θ(N) |
-| Instruções | 1 FMA / thread | Θ(1) |
-| Memória lida | 2·N·4 B ≈ 8 MiB | Θ(N) |
-| Memória escrita | N·4 B ≈ 4 MiB | Θ(N) |
-| Tempo medido | ≈ 6.8 ms (GTX 1650) | T(N) ≈ Θ(N) |
-
----
+| Grandeza          | Valor aproximado           | Notação      |
+|-------------------|---------------------------|---------------|
+| Work-items        | N = 1 048 576             | Θ(N)          |
+| Operações         | 1 soma por elemento       | Θ(N)          |
+| Memória lida      | 2 · N · 4 B ≈ 8 MiB       | Θ(N)          |
+| Memória escrita   | N · 4 B ≈ 4 MiB           | Θ(N)          |
+| Tempo de kernel   | medido com eventos CUDA   | T(N) ≈ Θ(N)   |
