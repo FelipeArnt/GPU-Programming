@@ -6,7 +6,7 @@
 
 ## 1. Arquitetura & Organização
 
-```bash
+```text
 GPU
 ├── Streaming Multiprocessors (SMs) - dezenas
 │   ├── CUDA Cores/Stream Processors - centenas por SM
@@ -133,13 +133,13 @@ double run_kernel(int n, float *x, float *y, float *z, int threadsPerBlock, int 
 
 O `main` calcula `threadsPerBlock` (256, limitado por `prop.maxThreadsPerBlock`) e `blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock`, passa isso para `run_kernel`, valida o resultado e imprime uma amostra 8×16.
 
-***
+---
 
 ## 6. Saída Esperada (GTX 1650)
 
 Exemplo típico de saída:
 
-```bash
+```text
 Validação: OK
   69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
   69  69  69  69  69  69  69  69  69  69  69  69  69  69  69  69
