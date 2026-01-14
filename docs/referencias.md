@@ -16,3 +16,7 @@ Grid-Stride loops:
 
 Shared memory:
 - https://developer.nvidia.com/blog/using-shared-memory-cuda-cc/
+
+
+OpenGL Matrizes:
+https://austinmorlan.com/posts/opengl_matrices/
