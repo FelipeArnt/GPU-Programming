@@ -1,0 +1,1 @@
+/*Funções matemáticas compartilhadas*/
