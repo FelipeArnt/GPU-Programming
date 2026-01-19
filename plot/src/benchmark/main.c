@@ -1,1 +1,1 @@
-/* Compara tudo*/
+/* Orquestração e Medição */

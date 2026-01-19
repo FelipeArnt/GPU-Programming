@@ -20,3 +20,19 @@ gpu-benchmark/
     └── main.c              # Orquestração e medição
 ```
 <!---->
+
+
+## Tópicos a serem estudados no arquivo geometria.h
+
+ Definir estruturas de dados que serão utilizadas por todos backends.
+
+O que estudar:
+- **`struct Point`**: {float x,y,z;}
+- **`struct Triangle`**: {Point v[3];}
+- **`struct Mesh`**: {Triangle*faces; int num_faces;}
+- **`Alinhamento de memória`**: Usar __attribute__((aligned(16))) para vetorização.
+
+> Para entender melhor, desenhar cubo manualmente -> 12 Triângulos e 8 vértices.
+
+
+
