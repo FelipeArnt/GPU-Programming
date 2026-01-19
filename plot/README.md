@@ -35,4 +35,14 @@ O que estudar:
 > Para entender melhor, desenhar cubo manualmente -> 12 Triângulos e 8 vértices.
 
 
+---- 
+
+
+Recursos de Estudo
+
+- CUDA: "CUDA C++ Programming Guide" (docs.nvidia.com)
+- OpenCL: "OpenCL 3.0 Reference Card" (khronos.org)
+- Benchmarking: perf (Linux) para cache misses
+- Livro: "Structured Parallel Programming" - Patterns para CUDA/OpenCL
+- Dica: Comece com vetores pequenos (1024 elementos) e vá aumentando até 2^28.
 
