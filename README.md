@@ -22,7 +22,7 @@ Para o projeto de plot, serão 4 semanas de estudo com implementações graduais
 - Benchmarking: perf (Linux) para cache misses
 - Livro: "Structured Parallel Programming" - Patterns para CUDA/OpenCL
 
-> Dica: Começar com vetores pequenos (1024 elementos) e ir aumentando até 2^28.
+>  com vetores pequenos (1024 elementos) e ir aumentando até 2^28.
 
 ### Anotações
 
